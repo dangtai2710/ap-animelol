@@ -133,13 +133,6 @@
       setTimeout(function(){
         document.body.classList.add('loaded');
       }, 50);
-      
-      // Force theme colors to apply
-      setTimeout(function(){
-        const script = document.createElement('script');
-        script.src = '/force-theme.js';
-        document.head.appendChild(script);
-      }, 100);
     </script>
   </body>
 </html>

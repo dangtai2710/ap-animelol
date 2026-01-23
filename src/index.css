@@ -164,35 +164,21 @@
   [class*="theme-button"],
   button:has([class*="Play"]),
   a:has([class*="Play"]) {
-    background: var(--primary) !important;
-    color: var(--primary-foreground) !important;
-    border-color: var(--primary) !important;
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    border-color: hsl(var(--primary)) !important;
   }
 
   button[class*="bg-gradient-primary"] {
     background: var(--gradient-primary) !important;
   }
 
-  /* Universal button override - ANY button with "Xem" or "Play" text */
-  button:contains("Xem"),
-  button:contains("Play"),
-  a:contains("Xem"),
-  a:contains("Play"),
-  *:has(> button:contains("Xem")),
-  *:has(> a:contains("Xem")),
-  *:has(> button:contains("Play")),
-  *:has(> a:contains("Play")) {
-    background: var(--primary) !important;
-    color: var(--primary-foreground) !important;
-    border-color: var(--primary) !important;
-  }
-
   /* Link elements with theme-button class (for asChild) */
   a.theme-button,
   .theme-button a {
-    background: var(--primary) !important;
-    color: var(--primary-foreground) !important;
-    border-color: var(--primary) !important;
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    border-color: hsl(var(--primary)) !important;
   }
 
   a.theme-button[class*="gradient"],
@@ -207,9 +193,9 @@
   .homepage button,
   [class*="hero"] button,
   [class*="slider"] button {
-    background: var(--primary) !important;
-    color: var(--primary-foreground) !important;
-    border-color: var(--primary) !important;
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    border-color: hsl(var(--primary)) !important;
   }
 
   .hero-slider button[class*="gradient"],
@@ -223,8 +209,8 @@
   .dark button,
   [class*="bg-black"] button,
   [class*="bg-gray"] button {
-    background: var(--primary) !important;
-    color: var(--primary-foreground) !important;
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
   }
 
   /* Override any black background on buttons */
@@ -232,8 +218,8 @@
   button[style*="background-color: black"],
   button[style*="background: #000"],
   button[style*="background-color: #000"] {
-    background: var(--primary) !important;
-    color: var(--primary-foreground) !important;
+    background: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
   }
 
   .bg-gradient-overlay {

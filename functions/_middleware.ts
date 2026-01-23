@@ -3,6 +3,29 @@ export interface Env {
   SUPABASE_ANON_KEY?: string;
 }
 
+// Minimal type declarations for Cloudflare Pages/Workers runtime.
+// Cloudflare provides these globals at runtime, but local TS may not know them.
+type RewriterElement = {
+  setInnerContent: (content: string, options?: { html?: boolean }) => void;
+  setAttribute: (name: string, value: string) => void;
+  append: (content: string, options?: { html?: boolean }) => void;
+};
+
+declare const HTMLRewriter: {
+  new (): {
+    on: (selector: string, handlers: any) => any;
+    transform: (response: Response) => Response;
+  };
+};
+
+type PagesFunctionContext<TEnv> = {
+  request: Request;
+  env: TEnv;
+  next: () => Promise<Response>;
+};
+
+type PagesFunction<TEnv> = (context: PagesFunctionContext<TEnv>) => Promise<Response>;
+
 type SeoPayload = {
   title: string;
   description: string;
@@ -135,14 +158,14 @@ function routeToSeo(url: URL, env: Env): Promise<SeoPayload | null> {
 
 class TitleRewriter {
   constructor(private value: string) {}
-  element(el: Element) {
+  element(el: RewriterElement) {
     el.setInnerContent(this.value);
   }
 }
 
 class MetaRewriter {
   constructor(private value: string) {}
-  element(el: Element) {
+  element(el: RewriterElement) {
     if (!this.value) return;
     el.setAttribute("content", this.value);
   }
@@ -150,7 +173,7 @@ class MetaRewriter {
 
 class LinkHrefRewriter {
   constructor(private href: string) {}
-  element(el: Element) {
+  element(el: RewriterElement) {
     if (!this.href) return;
     el.setAttribute("href", this.href);
   }
@@ -158,7 +181,7 @@ class LinkHrefRewriter {
 
 class HeadInjector {
   constructor(private seo: SeoPayload) {}
-  element(el: Element) {
+  element(el: RewriterElement) {
     const canonical = this.seo.canonicalUrl
       ? `<link rel="canonical" href="${escapeHtmlAttr(this.seo.canonicalUrl)}" />`
       : "";
@@ -182,7 +205,7 @@ function escapeHtmlAttr(value: string): string {
     .replaceAll(">", "&gt;");
 }
 
-async function buildSeoResponse(context: any, seo: SeoPayload): Promise<Response> {
+async function buildSeoResponse(context: PagesFunctionContext<Env>, seo: SeoPayload): Promise<Response> {
   const res = await context.next();
   const contentType = res.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) return res;
