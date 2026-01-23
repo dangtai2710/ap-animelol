@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Xem phim online miễn phí chất lượng cao - PhimHD</title>
+    <meta name="description" content="Xem phim online HD vietsub, thuyết minh miễn phí. Kho phim đa dạng với hàng ngàn bộ phim mới nhất được cập nhật liên tục." />
+    <meta name="keywords" content="phim hay, xem phim, phim vietsub, phim thuyết minh, phim HD" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#e11d48" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PhimHD" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Xem phim online miễn phí chất lượng cao - PhimHD" />
+    <meta property="og:description" content="Xem phim online HD vietsub, thuyết minh miễn phí. Kho phim đa dạng với hàng ngàn bộ phim mới nhất được cập nhật liên tục." />
+    <meta property="og:site_name" content="PhimHD" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:image" content="/icon-512.svg" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Xem phim online miễn phí chất lượng cao - PhimHD" />
+    <meta name="twitter:description" content="Xem phim online HD vietsub, thuyết minh miễn phí. Kho phim đa dạng với hàng ngàn bộ phim mới nhất được cập nhật liên tục." />
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    
+    <!-- Inline theme preload script for fastest loading -->
+    <script>
+      // Preload theme settings to prevent FOUC
+      (function() {
+        // Default theme
+        const defaultTheme = {
+          primaryColor: "#e11d48",
+          fontFamily: "Be Vietnam Pro",
+          language: "vi"
+        };
+
+        // Apply theme function
+        function applyTheme(theme) {
+          const root = document.documentElement;
+          
+          // Convert hex to HSL for primary color
+          const hexToHsl = (hex) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            if (!result) return null;
+            
+            let r = parseInt(result[1], 16) / 255;
+            let g = parseInt(result[2], 16) / 255;
+            let b = parseInt(result[3], 16) / 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h = 0, s = 0;
+            const l = (max + min) / 2;
+            
+            if (max !== min) {
+              const d = max - min;
+              s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+              switch (max) {
+                case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                case g: h = ((b - r) / d + 2) / 6; break;
+                case b: h = ((r - g) / d + 4) / 6; break;
+              }
+            }
+            
+            return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+          };
+
+          // Apply primary color immediately
+          const hsl = hexToHsl(theme.primaryColor);
+          if (hsl) {
+            root.style.setProperty("--primary", hsl);
+            root.style.setProperty("--ring", hsl);
+            root.style.setProperty("--sidebar-primary", hsl);
+            root.style.setProperty("--cinema-red", hsl);
+            
+            // Update meta theme-color
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            if (metaThemeColor) {
+              metaThemeColor.content = theme.primaryColor;
+            }
+          }
+
+          // Apply font family
+          root.style.setProperty("--font-family", `'${theme.fontFamily}', sans-serif`);
+          document.body.style.fontFamily = `'${theme.fontFamily}', sans-serif`;
+
+          // Set language attribute
+          document.documentElement.lang = theme.language;
+        }
+
+        // Try to load saved theme from localStorage first (fastest)
+        try {
+          const savedTheme = localStorage.getItem('theme-settings');
+          if (savedTheme) {
+            const theme = JSON.parse(savedTheme);
+            applyTheme(theme);
+            window.preloadedTheme = theme;
+            return; // Exit early if we have saved theme
+          }
+        } catch (e) {
+          console.log('No saved theme found in localStorage');
+        }
+
+        // Apply default theme immediately
+        applyTheme(defaultTheme);
+        window.preloadedTheme = defaultTheme;
+      })();
+    </script>
+    
+    <!-- Preload critical Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GCTLBMEHRG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GCTLBMEHRG');
+</script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+project_id = "mrvtyaajbqayqvmmncfl"
+
+[functions.sitemap-index]
+verify_jwt = false
+
+[functions.sitemap-movies]
+verify_jwt = false
+
+[functions.sitemap-episodes]
+verify_jwt = false
+
+[functions.sitemap-taxonomy]
+verify_jwt = false
+
+[functions.sitemap-posts]
+verify_jwt = false
+
+[functions.sitemap-pages]
+verify_jwt = false
+
+[functions.robots-txt]
+verify_jwt = false
+
+[functions.indexnow-ping]
+verify_jwt = false
+
+[functions.indexnow-verify]
+verify_jwt = false
+
+[functions.seo-prerender]
+verify_jwt = false
+
+[functions.admin-create-user]
+verify_jwt = false
+
+[functions.admin-change-password]
+verify_jwt = false
+
+[functions.admin-delete-user]
+verify_jwt = false
+
+[functions.generate-content]
+verify_jwt = false
