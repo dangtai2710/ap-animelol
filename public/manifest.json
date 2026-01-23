@@ -2,11 +2,11 @@
   "name": "Phim HD - Xem phim online",
   "short_name": "PhimHD",
   "description": "Xem phim online chất lượng cao, vietsub, thuyết minh",
-  "start_url": "/",
+  "start_url": "/?standalone=true",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#e11d48",
-  "orientation": "any",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/favicon.ico",
