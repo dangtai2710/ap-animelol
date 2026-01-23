@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, X } from "lucide-react";
+import { Download, X, Smartphone, Apple, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -17,6 +16,7 @@ export default function PWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     // Check if app is already installed
@@ -31,7 +31,11 @@ export default function PWAInstall() {
 
     checkInstalled();
 
-    // Listen for beforeinstallprompt event
+    // Detect iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    setIsIOS(isIOSDevice);
+
+    // Listen for beforeinstallprompt event (Android only)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -48,6 +52,14 @@ export default function PWAInstall() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+
+    // Show iOS prompt after delay
+    if (isIOSDevice) {
+      const timer = setTimeout(() => {
+        setShowInstallPrompt(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -88,39 +100,72 @@ export default function PWAInstall() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-4">
-      <Card className="border-primary/20 bg-background/95 backdrop-blur-sm shadow-lg">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Download className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Cài đặt ứng dụng</CardTitle>
+    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-4 shadow-lg border border-purple-400">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Smartphone className="w-5 h-5 text-white" />
+            <h3 className="text-white font-semibold">Cài đặt ứng dụng Phim HD</h3>
+          </div>
+          <button
+            onClick={handleDismiss}
+            className="text-white/80 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {isIOS ? (
+          <div className="space-y-3">
+            <p className="text-white text-sm">
+              Cài đặt Phim HD trên màn hình chính để trải nghiệm tốt nhất!
+            </p>
+            <div className="bg-white/10 rounded-lg p-3 space-y-2">
+              <div className="flex items-center gap-2 text-white text-sm">
+                <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">1</span>
+                <span>Nhấn nút Share <Share2 className="w-3 h-3 mx-1" /></span>
+              </div>
+              <div className="flex items-center gap-2 text-white text-sm">
+                <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">2</span>
+                <span>Chọn <span className="font-semibold">"Thêm vào Màn hình chính"</span></span>
+              </div>
+              <div className="flex items-center gap-2 text-white text-sm">
+                <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">3</span>
+                <span>Nhấn <span className="font-semibold">"Thêm"</span> để hoàn tất</span>
+              </div>
             </div>
             <Button
-              variant="ghost"
-              size="sm"
               onClick={handleDismiss}
-              className="h-8 w-8 p-0"
+              className="w-full bg-white text-purple-600 hover:bg-white/90"
             >
-              <X className="h-4 w-4" />
+              <Apple className="w-4 h-4 mr-2" />
+              Đã hiểu, tôi sẽ cài đặt
             </Button>
           </div>
-          <CardDescription>
-            Cài đặt PhimHD vào máy tính để trải nghiệm tốt hơn!
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex space-x-2">
-            <Button onClick={handleInstallClick} className="flex-1">
-              <Download className="h-4 w-4 mr-2" />
-              Cài đặt ngay
-            </Button>
-            <Button variant="outline" onClick={handleDismiss}>
-              Để sau
-            </Button>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-white text-sm">
+              Cài đặt Phim HD để xem phim offline và nhận thông báo mới!
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 bg-white/10 text-white border-white/20 hover:bg-white/20"
+                onClick={handleDismiss}
+              >
+                Để sau
+              </Button>
+              <Button
+                onClick={handleInstallClick}
+                className="flex-1 bg-white text-purple-600 hover:bg-white/90"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Cài đặt ngay
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   );
 }
