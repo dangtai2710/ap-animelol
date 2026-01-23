@@ -100,7 +100,7 @@ export default function PWAInstall() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
+    <div className="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-4 md:bottom-4 md:w-96">
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-4 shadow-lg border border-purple-400">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
