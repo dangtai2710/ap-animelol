@@ -147,9 +147,10 @@ function routeToSeo(url: URL, env: Env): Promise<SeoPayload | null> {
     return getHomepageSeo(url, env);
   }
 
-  // Movie detail route: /phim/:slug
-  const movieMatch = path.match(/^\/phim\/([^\/]+)\/?$/i);
+  // Movie detail route: /phim/:slug (with or without trailing slash)
+  const movieMatch = path.match(/^\/phim\/([^\/]+)(?:\/)?$/i);
   if (movieMatch) {
+    console.log(`Movie SEO: slug=${movieMatch[1]} path=${path}`);
     return getMovieSeo(url, env, movieMatch[1]);
   }
 
@@ -252,6 +253,9 @@ async function buildSeoResponse(context: PagesFunctionContext<Env>, seo: SeoPayl
 export const onRequest: PagesFunction<Env> = async (context) => {
   const req = context.request as Request;
   const url = new URL(req.url);
+  const ua = req.headers.get("user-agent") || "";
+  
+  console.log(`Middleware: ${req.method} ${url.pathname} ua=${ua}`);
 
   // Only rewrite HTML GET/HEAD
   if (!(req.method === "GET" || req.method === "HEAD")) return context.next();
@@ -259,7 +263,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   if (isAssetPath(url.pathname)) return context.next();
 
   // Only do heavy work for bots/social crawlers
-  if (!isLikelyBot(req)) return context.next();
+  const isBot = isLikelyBot(req);
+  console.log(`Is bot: ${isBot}`);
+  if (!isBot) return context.next();
 
   const cacheKey = new Request(url.toString(), req);
   const cache = (caches as any).default as Cache | undefined;
@@ -270,13 +276,17 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   const seo = await routeToSeo(url, context.env as Env);
+  console.log(`SEO result:`, seo);
   if (!seo) {
+    console.log(`No SEO data, returning passthrough`);
     const passthrough = await context.next();
     if (cache) await cache.put(cacheKey, passthrough.clone());
     return passthrough;
   }
 
+  console.log(`Building SEO response...`);
   const out = await buildSeoResponse(context, seo);
   if (cache) await cache.put(cacheKey, out.clone());
+  console.log(`SEO response built and cached`);
   return out;
 };
