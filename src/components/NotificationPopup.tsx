@@ -59,17 +59,26 @@ const NotificationPopup = () => {
     }
   }, []);
 
-  const { data: notifications } = useQuery({
+  const { data: notifications = [] } = useQuery({
     queryKey: ["public-notifications"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("is_active", true)
-        .order("display_order", { ascending: true });
-      if (error) throw error;
-      return data as Notification[];
-    }
+      try {
+        const { data, error } = await supabase
+          .from("notifications")
+          .select("*")
+          .eq("is_active", true)
+          .order("display_order", { ascending: true });
+        if (error) {
+          console.warn("Failed to fetch notifications:", error);
+          return [] as Notification[];
+        }
+        return (data as Notification[]) || [];
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+        return [] as Notification[];
+      }
+    },
+    retry: 1,
   });
 
   // Filter notifications - memoized to prevent recalculation
