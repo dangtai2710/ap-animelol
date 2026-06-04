@@ -435,6 +435,169 @@ export default function Documentation() {
                 </AccordionContent>
               </AccordionItem>
 
+              {/* Supabase Database Migration */}
+              <AccordionItem value="supabase" className="border rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <Settings className="h-5 w-5 text-primary" />
+                    <div className="text-left">
+                      <p className="font-medium">Đổi Database Supabase</p>
+                      <p className="text-sm text-muted-foreground font-normal">Hướng dẫn chuyển sang project Supabase mới</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-4 space-y-4">
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Bước 1: Chuẩn bị thông tin Supabase mới</h4>
+                    <p className="text-muted-foreground">
+                      Đăng nhập vào <strong>Supabase Console</strong>, tạo một dự án mới và lấy các thông tin sau từ phần <strong>Project Settings → API</strong>:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      <li><strong>Project URL:</strong> Ví dụ <code className="bg-muted px-1 rounded">https://xxxx.supabase.co</code></li>
+                      <li><strong>Anon Key (Publishable Key):</strong> Mã token công khai</li>
+                      <li><strong>Project ID (Project Ref):</strong> Chuỗi mã định danh dự án (ví dụ: <code className="bg-muted px-1 rounded">xxxx</code> nằm trong URL)</li>
+                      <li><strong>Database Connection String:</strong> Chuỗi kết nối database (trong phần <strong>Settings → Database</strong>)</li>
+                    </ul>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Bước 2: Cập nhật Environment Variables ở Local</h4>
+                    <p className="text-muted-foreground">
+                      Mở file <code className="bg-muted px-1 rounded">.env</code> ở thư mục gốc của dự án và thay thế các thông tin cũ bằng thông tin mới:
+                    </p>
+                    <div className="bg-muted p-3 rounded-lg overflow-x-auto">
+                      <pre className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
+{`VITE_SUPABASE_PROJECT_ID="<PROJECT_ID_MỚI>"
+VITE_SUPABASE_URL="https://<PROJECT_ID_MỚI>.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY="<ANON_KEY_MỚI>"`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Bước 3: Cập nhật supabase/config.toml</h4>
+                    <p className="text-muted-foreground">
+                      Mở file <code className="bg-muted px-1 rounded">supabase/config.toml</code> dòng số 1:
+                    </p>
+                    <div className="bg-muted p-3 rounded-lg overflow-x-auto">
+                      <pre className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
+{`project_id = "<PROJECT_ID_MỚI>"`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Bước 4: Đồng bộ cấu trúc Database sang Supabase mới</h4>
+                    <p className="text-muted-foreground">
+                      Dự án của bạn đã có sẵn các file SQL Migrations định nghĩa cấu trúc bảng trong thư mục <code className="bg-muted px-1 rounded">supabase/migrations</code>.
+                      Bạn có thể đẩy thẳng chúng lên Supabase mới bằng Supabase CLI.
+                    </p>
+                    <ol className="list-decimal list-inside space-y-3 text-muted-foreground">
+                      <li>
+                        <strong>Đăng nhập Supabase CLI:</strong>
+                        <div className="bg-muted p-2 rounded mt-1 overflow-x-auto">
+                          <code className="text-xs">npx supabase login</code>
+                        </div>
+                      </li>
+                      <li>
+                        <strong>Liên kết với project mới:</strong>
+                        <div className="bg-muted p-2 rounded mt-1 overflow-x-auto">
+                          <code className="text-xs">npx supabase link --project-ref PROJECT_ID_MỚI</code>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          ⚠️ <strong>Quan trọng:</strong> Hệ thống sẽ hỏi <code>Enter your database password:</code> - Bạn phải nhập đúng mật khẩu cơ sở dữ liệu (mật khẩu bạn tự đặt lúc tạo project).
+                          Khi gõ mật khẩu, các ký tự sẽ không hiển thị trên màn hình (đây là tính năng bảo mật).
+                        </p>
+                      </li>
+                      <li>
+                        <strong>Deploy Edge Functions:</strong>
+                        <div className="bg-muted p-2 rounded mt-1 overflow-x-auto">
+                          <code className="text-xs">npx supabase functions deploy</code>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Bước 5: Cập nhật biến môi trường trên Cloudflare Pages</h4>
+                    <p className="text-muted-foreground">
+                      Vì hệ thống sử dụng Edge Middleware ở file <code className="bg-muted px-1 rounded">_middleware.ts</code> để tối ưu SEO nên middleware này gọi trực tiếp đến Supabase qua các biến môi trường của host:
+                    </p>
+                    <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+                      <li>Truy cập trang quản trị hosting của bạn (ví dụ <strong>Cloudflare Dashboard → Pages → dự án của bạn</strong>)</li>
+                      <li>Vào mục <strong>Settings → Environment variables</strong></li>
+                      <li>Cập nhật lại 2 biến môi trường sau cho cả 2 môi trường <strong>Production</strong> và <strong>Preview</strong>:
+                        <div className="bg-muted p-2 rounded mt-1 overflow-x-auto space-y-1">
+                          <div><code className="text-xs">SUPABASE_URL = LINK_SUPABASE_MỚI</code></div>
+                          <div><code className="text-xs">SUPABASE_ANON_KEY = ANON_KEY_MỚI</code></div>
+                        </div>
+                      </li>
+                      <li>Tiến hành <strong>Redeploy</strong> lại bản build mới nhất để Cloudflare Pages áp dụng config mới</li>
+                    </ol>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h4 className="font-medium">Bước 6: Tạo Admin User cho Supabase mới</h4>
+                    <ol className="list-decimal list-inside space-y-3 text-muted-foreground">
+                      <li>
+                        <strong>Tạo User trong Authentication:</strong>
+                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1 text-sm">
+                          <li>Vào <strong>Supabase Dashboard → Authentication → Users</strong></li>
+                          <li>Nhấn <strong>"Add user" → "Create new user"</strong></li>
+                          <li>Nhập Email: <code className="bg-muted px-0.5 rounded text-xs">admin@gmail.com</code></li>
+                          <li>Nhập Password: <code className="bg-muted px-0.5 rounded text-xs">Admin@123</code> (hoặc mật khẩu khác)</li>
+                          <li>✅ Tick vào <strong>"Auto Confirm User"</strong></li>
+                          <li>Nhấn <strong>"Create User"</strong> → Copy UUID (User ID) vừa tạo</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Gán role Admin cho user:</strong>
+                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1 text-sm">
+                          <li>Vào <strong>Table Editor → tìm bảng <code className="bg-muted px-0.5 rounded text-xs">user_roles</code></strong></li>
+                          <li>Nhấn <strong>"Insert row"</strong> và điền:
+                            <ul className="list-disc list-inside ml-4 mt-1">
+                              <li><code className="bg-muted px-0.5 rounded text-xs">user_id</code>: UUID vừa copy</li>
+                              <li><code className="bg-muted px-0.5 rounded text-xs">role</code>: <code className="bg-muted px-0.5 rounded text-xs">admin</code></li>
+                            </ul>
+                          </li>
+                          <li>Lưu lại</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong>Hoặc dùng SQL (nhanh hơn):</strong>
+                        <p className="text-xs text-muted-foreground mt-1">Vào <strong>SQL Editor</strong> và chạy lệnh (thay <code className="bg-muted px-0.5 rounded">USER_UUID</code> bằng UUID thực):</p>
+                        <div className="bg-muted p-2 rounded mt-1 overflow-x-auto">
+                          <code className="text-xs">{`INSERT INTO public.user_roles (user_id, role)
+VALUES ('<USER_UUID>', 'admin');`}</code>
+                        </div>
+                      </li>
+                      <li>
+                        <strong>Kiểm tra:</strong>
+                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1 text-sm">
+                          <li>Vào trang web của bạn, đăng nhập với tài khoản admin vừa tạo</li>
+                          <li>Nếu không thấy Admin panel, kiểm tra lại role trong database</li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </div>
+
+                  <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
+                      <div className="text-sm">
+                        <p className="font-medium text-yellow-500">⚠️ Lưu ý quan trọng:</p>
+                        <ul className="list-disc list-inside mt-1 text-muted-foreground space-y-1">
+                          <li>Backup toàn bộ dữ liệu từ Supabase cũ trước khi chuyển</li>
+                          <li>Kiểm tra tất cả Edge Functions đã deploy thành công</li>
+                          <li>Test local development trước khi deploy lên production</li>
+                          <li>Các biến môi trường cũ sẽ không hoạt động, cần update tất cả nơi sử dụng</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
               {/* Troubleshooting */}
               <AccordionItem value="troubleshooting" className="border rounded-lg px-4">
                 <AccordionTrigger className="hover:no-underline">

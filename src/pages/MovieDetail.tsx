@@ -411,7 +411,7 @@ const MovieDetail = () => {
               {/* Watch button */}
               {episodes.length > 0 && episodes[0]?.server_data?.length > 0 && (
                 <ThemeButton
-                  variant="gradient"
+                  variant="gold-gradient"
                   onClick={() => {
                     setIsPlaying(true);
                     window.scrollTo({ top: 0, behavior: "smooth" });

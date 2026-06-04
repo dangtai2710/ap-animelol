@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ThemeButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "gradient" | "outline";
+  variant?: "default" | "gradient" | "gold-gradient" | "outline";
   size?: "default" | "sm" | "lg" | "icon";
   children: React.ReactNode;
   asChild?: boolean;
@@ -16,6 +16,8 @@ export const ThemeButton = forwardRef<HTMLButtonElement, ThemeButtonProps>(
       switch (variant) {
         case "gradient":
           return "bg-gradient-primary hover:opacity-90 text-primary-foreground shadow-lg";
+        case "gold-gradient":
+          return "bg-gradient-gold hover:opacity-90 text-secondary-foreground shadow-lg";
         case "outline":
           return "border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground";
         default:
@@ -26,18 +28,20 @@ export const ThemeButton = forwardRef<HTMLButtonElement, ThemeButtonProps>(
     const variantStyle: React.CSSProperties =
       variant === "gradient"
         ? { background: "var(--gradient-primary)", color: "hsl(var(--primary-foreground))" }
-        : variant === "outline"
-          ? {
-              background: "transparent",
-              color: "hsl(var(--primary))",
-              borderColor: "hsl(var(--primary))",
-            }
-          : {
-              background: "hsl(var(--primary))",
-              backgroundColor: "hsl(var(--primary))",
-              color: "hsl(var(--primary-foreground))",
-              borderColor: "hsl(var(--primary))",
-            };
+        : variant === "gold-gradient"
+          ? { background: "var(--gradient-gold)", color: "hsl(var(--secondary-foreground))" }
+          : variant === "outline"
+            ? {
+                background: "transparent",
+                color: "hsl(var(--primary))",
+                borderColor: "hsl(var(--primary))",
+              }
+            : {
+                background: "hsl(var(--primary))",
+                backgroundColor: "hsl(var(--primary))",
+                color: "hsl(var(--primary-foreground))",
+                borderColor: "hsl(var(--primary))",
+              };
 
     return (
       <Button
