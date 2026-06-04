@@ -64,15 +64,24 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ["theme-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("setting_key, setting_value")
-        .in("setting_key", ["theme_primary_color", "theme_font_family", "site_language"]);
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("setting_key, setting_value")
+          .in("setting_key", ["theme_primary_color", "theme_font_family", "site_language"]);
+        
+        if (error) {
+          console.warn("Failed to fetch theme settings:", error);
+          return [];
+        }
+        return data || [];
+      } catch (err) {
+        console.error("Error fetching theme settings:", err);
+        return [];
+      }
     },
     staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
 
   useEffect(() => {
