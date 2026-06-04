@@ -11,6 +11,12 @@
   function applyTheme(theme) {
     const root = document.documentElement;
     
+    // Guard against null documentElement
+    if (!root) {
+      console.warn('Document element not available yet');
+      return;
+    }
+    
     // Convert hex to HSL for primary color
     const hexToHsl = (hex) => {
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -40,7 +46,7 @@
 
     // Apply primary color
     const hsl = hexToHsl(theme.primaryColor);
-    if (hsl) {
+    if (hsl && root.style) {
       root.style.setProperty("--primary", hsl);
       root.style.setProperty("--ring", hsl);
       root.style.setProperty("--sidebar-primary", hsl);
@@ -54,8 +60,13 @@
     }
 
     // Apply font family
-    root.style.setProperty("--font-family", `'${theme.fontFamily}', sans-serif`);
-    document.body.style.fontFamily = `'${theme.fontFamily}', sans-serif`;
+    if (root.style) {
+      root.style.setProperty("--font-family", `'${theme.fontFamily}', sans-serif`);
+    }
+    const body = document.body;
+    if (body && body.style) {
+      body.style.fontFamily = `'${theme.fontFamily}', sans-serif`;
+    }
 
     // Preload Google Font
     const googleFonts = {
@@ -83,11 +94,22 @@
     }
 
     // Set language attribute
-    document.documentElement.lang = theme.language;
+    if (root) {
+      root.lang = theme.language;
+    }
   }
 
   // Apply default theme immediately
-  applyTheme(defaultTheme);
+  if (document.documentElement) {
+    applyTheme(defaultTheme);
+  } else {
+    // If DOM is not ready, defer execution
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        applyTheme(defaultTheme);
+      });
+    }
+  }
 
   // Try to load saved theme from localStorage (cache)
   try {
