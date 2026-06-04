@@ -115,21 +115,30 @@ const Auth = ({ isCustomPath = false }: AuthProps) => {
     if (!validateForm(false)) return;
 
     setIsSubmitting(true);
-    const { error } = await signIn(email, password);
-    setIsSubmitting(false);
+    try {
+      const { error } = await signIn(email, password);
+      setIsSubmitting(false);
 
-    // Save credentials if remember me is checked and login is successful
-    if (!error) {
-      saveCredentials(email, password);
-      toast.success("Đăng nhập thành công!");
-    } else {
-      if (error.message.includes("Invalid login credentials")) {
-        toast.error("Email hoặc mật khẩu không đúng");
-      } else if (error.message.includes("Email not confirmed")) {
-        toast.error("Email chưa được xác nhận");
+      // Save credentials if remember me is checked and login is successful
+      if (!error) {
+        saveCredentials(email, password);
+        toast.success("Đăng nhập thành công!");
       } else {
-        toast.error(error.message);
+        console.error("Sign in error:", error);
+        if (error.message?.includes("Invalid login credentials")) {
+          toast.error("Email hoặc mật khẩu không đúng");
+        } else if (error.message?.includes("Email not confirmed")) {
+          toast.error("Email chưa được xác nhận");
+        } else if (error.message?.includes("UNAUTHORIZED_INVALID_API_KEY")) {
+          toast.error("Lỗi cấu hình server, vui lòng liên hệ admin");
+        } else {
+          toast.error(error.message || "Đăng nhập thất bại");
+        }
       }
+    } catch (err) {
+      setIsSubmitting(false);
+      console.error("Sign in exception:", err);
+      toast.error("Lỗi đăng nhập, vui lòng thử lại");
     }
   };
 
@@ -139,17 +148,26 @@ const Auth = ({ isCustomPath = false }: AuthProps) => {
     if (!validateForm(true)) return;
 
     setIsSubmitting(true);
-    const { error } = await signUp(email, password, fullName || undefined);
-    setIsSubmitting(false);
+    try {
+      const { error } = await signUp(email, password, fullName || undefined);
+      setIsSubmitting(false);
 
-    if (error) {
-      if (error.message.includes("User already registered")) {
-        toast.error("Email này đã được đăng ký");
+      if (error) {
+        console.error("Sign up error:", error);
+        if (error.message?.includes("User already registered")) {
+          toast.error("Email này đã được đăng ký");
+        } else if (error.message?.includes("UNAUTHORIZED_INVALID_API_KEY")) {
+          toast.error("Lỗi cấu hình server, vui lòng liên hệ admin");
+        } else {
+          toast.error(error.message || "Đăng ký thất bại");
+        }
       } else {
-        toast.error(error.message);
+        toast.success("Đăng ký thành công! Đang chuyển hướng...");
       }
-    } else {
-      toast.success("Đăng ký thành công! Đang chuyển hướng...");
+    } catch (err) {
+      setIsSubmitting(false);
+      console.error("Sign up exception:", err);
+      toast.error("Lỗi đăng ký, vui lòng thử lại");
     }
   };
 
