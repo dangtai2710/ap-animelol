@@ -27,42 +27,57 @@ export function useSiteSettings() {
   return useQuery({
     queryKey: ["site-settings"],
     queryFn: async (): Promise<SiteSettings> => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("setting_key, setting_value");
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select("setting_key, setting_value");
 
-      if (error) throw error;
-
-      const settings: SiteSettings = {
-        site_url: null,
-        site_name: null,
-        logo_url: null,
-        favicon_url: null,
-        google_analytics_id: null,
-        google_tag_manager_id: null,
-        facebook_app_id: null,
-        head_html: null,
-        footer_html: null,
-        use_external_api: null,
-        external_api_source: null,
-        api_cache_ttl: null,
-        api_auto_refresh: null,
-        auth_login_enabled: null,
-        auth_signup_enabled: null,
-        auth_custom_path_enabled: null,
-        auth_custom_path: null,
-      };
-
-      data?.forEach((item) => {
-        if (item.setting_key in settings) {
-          (settings as any)[item.setting_key] = item.setting_value;
+        if (error) {
+          console.warn("Failed to fetch site settings:", error);
+          // Return default settings instead of throwing
+          return getDefaultSettings();
         }
-      });
 
-      return settings;
+        const settings: SiteSettings = getDefaultSettings();
+
+        data?.forEach((item) => {
+          if (item.setting_key in settings) {
+            (settings as any)[item.setting_key] = item.setting_value;
+          }
+        });
+
+        return settings;
+      } catch (err) {
+        console.error("Error fetching site settings:", err);
+        // Return default settings on any error
+        return getDefaultSettings();
+      }
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 1, // Retry once on failure
   });
+}
+
+function getDefaultSettings(): SiteSettings {
+  return {
+    site_url: null,
+    site_name: null,
+    logo_url: null,
+    favicon_url: null,
+    google_analytics_id: null,
+    google_tag_manager_id: null,
+    facebook_app_id: null,
+    head_html: null,
+    footer_html: null,
+    use_external_api: null,
+    external_api_source: null,
+    api_cache_ttl: null,
+    api_auto_refresh: null,
+    auth_login_enabled: null,
+    auth_signup_enabled: null,
+    auth_custom_path_enabled: null,
+    auth_custom_path: null,
+  };
 }
 
 // Helper to check if external API is enabled
