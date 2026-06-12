@@ -121,7 +121,7 @@ const MovieSchema = ({ movie, siteUrl = "" }: MovieSchemaProps) => {
     "@type": "VideoObject",
     name: movie.name,
     description: cleanDescription,
-    thumbnailUrl: movie.thumb_url || movie.poster_url,
+    thumbnailUrl: movie.thumb_url || movie.poster_url || `${siteUrl}/placeholder.jpg`,
     uploadDate: movie.year ? `${movie.year}-01-01` : new Date().toISOString().split("T")[0],
     duration: movie.time ? `PT${movie.time.replace(/[^0-9]/g, "")}M` : undefined,
     contentUrl: `${siteUrl}/phim/${movie.slug}`,

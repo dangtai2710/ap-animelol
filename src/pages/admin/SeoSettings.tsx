@@ -184,6 +184,20 @@ const SeoSettings = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label>Tiêu đề Trang chủ</Label>
+                  <Input
+                    value={settings.homepage_title || ""}
+                    onChange={(e) => updateSetting("homepage_title", e.target.value)}
+                    placeholder="Radiodt - Xem phim online miễn phí chất lượng cao"
+                  />
+                  <CharacterCounter
+                    current={settings.homepage_title?.length || 0}
+                    max={60}
+                    label="Tiêu đề Trang chủ"
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label>Meta Shortcut Icon (Favicon URL)</Label>
                   <Input
                     value={settings.favicon_url || ""}
