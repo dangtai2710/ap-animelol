@@ -121,9 +121,9 @@ const MovieSchema = ({ movie, siteUrl = "" }: MovieSchemaProps) => {
     "@type": "VideoObject",
     name: movie.name,
     description: cleanDescription,
-    thumbnailUrl: movie.thumb_url || movie.poster_url || `${siteUrl}/placeholder.jpg`,
+    thumbnailUrl: movie.thumb_url || movie.poster_url || (siteUrl ? `${siteUrl}/placeholder.jpg` : "https://via.placeholder.com/300x450"),
     uploadDate: movie.year ? `${movie.year}-01-01` : new Date().toISOString().split("T")[0],
-    duration: movie.time ? `PT${movie.time.replace(/[^0-9]/g, "")}M` : undefined,
+    duration: movie.time ? `PT${movie.time.replace(/[^0-9]/g, "")}M` : "PT0M",
     contentUrl: `${siteUrl}/phim/${movie.slug}`,
     embedUrl: `${siteUrl}/phim/${movie.slug}`,
     interactionStatistic: {
