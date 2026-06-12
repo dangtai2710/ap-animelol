@@ -12,7 +12,13 @@ interface MovieRatingProps {
 const getClientId = () => {
   let clientId = localStorage.getItem("movie_client_id");
   if (!clientId) {
-    clientId = crypto.randomUUID();
+    // Fallback for environments where crypto.randomUUID is not available
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      clientId = crypto.randomUUID();
+    } else {
+      // Generate a random ID as fallback
+      clientId = 'client_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+    }
     localStorage.setItem("movie_client_id", clientId);
   }
   return clientId;
